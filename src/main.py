@@ -12,7 +12,7 @@ async def worker(
     q: asyncio.Queue,
 ) -> None:
     while not q.empty():
-        account = await q.get()
+        account: Account = await q.get()
 
         try:
             client = await Nansen(logger=logger, account=account).init()
@@ -21,10 +21,10 @@ async def worker(
 
             await client.close()
         except Exception as e:
-            logger.error(e)
+            logger.error(f"[{account.email_username}] {e}")
         finally:
             sleep_time = random.randint(*SLEEP_RANGE)
-            client._logger.info(f"Sleeping for {sleep_time} seconds")
+            logger.info(f"[{account.email_username}] Sleeping for {sleep_time} seconds")
             await asyncio.sleep(sleep_time)
 
 
